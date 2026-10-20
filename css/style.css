@@ -609,11 +609,32 @@ button:hover,
   margin-top: 0.5rem;
 }
 /********************madia quary  ***********************/
-@media (max-width: 576px) {
+
+@media screen and (max-width: 576px) {
+  .rating-section {
+    padding: 2rem 1rem;
+    margin: 2rem auto;
+  }
+
+  .rating-stars {
+    gap: 0.25rem;
+    margin: 1rem 0;
+  }
+
   .rating-stars button {
     font-size: 2rem;
+    padding: 0.25rem;
+  }
+
+  .rating-result {
+    margin-top: 1rem;
+  }
+
+  .rating-result strong {
+    font-size: 1.75rem;
   }
 }
+
 
 
 /********************End Rateing **************************/
