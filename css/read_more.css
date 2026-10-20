@@ -2,7 +2,7 @@
 
 .read_more {
   position: relative;
-  background: url("/images/logo_Ah-safa (1).jpeg") no-repeat center;
+  background: url("../images/logo_Ah-safa%20(1).jpeg") no-repeat center;
   background-size: contain;
   background-attachment: fixed;
 }
