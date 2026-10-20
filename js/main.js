@@ -1,4 +1,8 @@
-// firebase
+
+/* =========================
+   1. Firebase Imports
+========================= */
+
 import { initializeApp } from
   "https://www.gstatic.com/firebasejs/13.0.0/firebase-app.js";
 
@@ -18,7 +22,9 @@ import {
   "https://www.gstatic.com/firebasejs/13.0.0/firebase-auth.js";
 
 
-// 1. Firebase Configuration
+/* =========================
+   2. Firebase Configuration
+========================= */
 
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
@@ -32,14 +38,19 @@ const firebaseConfig = {
 };
 
 
+/* =========================
+   3. Initialize Firebase
+========================= */
 
-// 2. Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 const auth = getAuth(app);
 
 
-// 3. Get HTML Elements
+/* =========================
+   4. Get HTML Elements
+========================= */
+
 const stars = document.querySelectorAll(
   "#ratingStars button"
 );
@@ -49,19 +60,27 @@ const ratingCount = document.getElementById("ratingCount");
 const ratingMessage = document.getElementById("ratingMessage");
 
 
-// 4. Variables
+/* =========================
+   5. Variables
+========================= */
+
 let currentUser = null;
 let selectedRating = 0;
 let hasVoted = false;
 let isReady = false;
+let isSaving = false;
 
 
-// 5. Display Stars
+/* =========================
+   6. Display Stars
+========================= */
+
 function showStars(value) {
   stars.forEach((star) => {
     const rating = Number(star.dataset.rating);
 
     star.classList.toggle("active", rating <= value);
+
     star.setAttribute(
       "aria-pressed",
       String(rating === value)
@@ -70,27 +89,29 @@ function showStars(value) {
 }
 
 
-// 6. Hover Effect
+/* =========================
+   7. Hover and Update Rating
+========================= */
+
 stars.forEach((star) => {
+
+  // Hover effect
   star.addEventListener("mouseenter", () => {
-    if (!hasVoted) {
+    if (isReady && !isSaving) {
       showStars(Number(star.dataset.rating));
     }
   });
 
-  // 7. Save Rating
+  // Select or edit rating
   star.addEventListener("click", async () => {
+
     if (!isReady || !currentUser) {
       ratingMessage.textContent =
         "خدمة التقييم لسه بتجهز، حاولي كمان شوية.";
       return;
     }
 
-    if (hasVoted) {
-      ratingMessage.textContent =
-        "سبق لكِ تقييم الموقع بالفعل ❤️";
-      return;
-    }
+    if (isSaving) return;
 
     const value = Number(star.dataset.rating);
 
@@ -99,21 +120,22 @@ stars.forEach((star) => {
     }
 
     // Prevent repeated clicks while saving
+    isSaving = true;
+
     stars.forEach((button) => {
       button.disabled = true;
     });
 
-    ratingMessage.textContent = "جاري حفظ تقييمك...";
+    ratingMessage.textContent = hasVoted
+      ? "جاري تعديل تقييمك..."
+      : "جاري حفظ تقييمك...";
 
     try {
       const result = await runTransaction(
         ref(db, `ratings/${currentUser.uid}`),
-        (currentData) => {
-          // Each anonymous user can save one rating
-          if (currentData !== null) {
-            return;
-          }
 
+        (currentData) => {
+          // Create a rating or update the existing rating
           return {
             stars: value
           };
@@ -127,37 +149,37 @@ stars.forEach((star) => {
         showStars(selectedRating);
 
         ratingMessage.textContent =
-          "شكرًا ليكي على تقييمك ❤️";
+          "تم حفظ تقييمك بنجاح ❤️";
       } else {
-        // A rating already exists for this user
-        hasVoted = true;
-
-        const savedValue = Number(result.snapshot.val()?.stars);
-
-        if (savedValue >= 1 && savedValue <= 5) {
-          selectedRating = savedValue;
-          showStars(selectedRating);
-        }
-
         ratingMessage.textContent =
-          "سبق لكِ تقييم الموقع من هذا الحساب ❤️";
+          "لم يتم حفظ التقييم. حاولي مرة أخرى.";
+
+        showStars(selectedRating);
       }
+
     } catch (error) {
       console.error("Saving rating error:", error);
 
       ratingMessage.textContent =
-        "تعذر حفظ التقييم. تأكدي من إعدادات Firebase.";
+        "تعذر حفظ التقييم. تأكدي من اتصال الإنترنت وإعدادات Firebase.";
 
-      // Allow the user to retry
+      showStars(selectedRating);
+
+    } finally {
+      isSaving = false;
+
       stars.forEach((button) => {
-        button.disabled = false;
+        button.disabled = !isReady;
       });
     }
   });
 });
 
 
-// 8. Reset Hover Effect
+/* =========================
+   8. Reset Hover Effect
+========================= */
+
 document.getElementById("ratingStars").addEventListener(
   "mouseleave",
   () => {
@@ -166,9 +188,13 @@ document.getElementById("ratingStars").addEventListener(
 );
 
 
-// 9. Listen for All Ratings and Calculate Average
+/* =========================
+   9. Calculate Average Rating
+========================= */
+
 onValue(
   ref(db, "ratings"),
+
   (snapshot) => {
     const data = snapshot.val() || {};
 
@@ -193,6 +219,7 @@ onValue(
 
     ratingCount.textContent = count;
   },
+
   (error) => {
     console.error("Loading ratings error:", error);
 
@@ -202,40 +229,53 @@ onValue(
 );
 
 
-// 10. Initialize Anonymous Authentication
+/* =========================
+   10. Initialize Authentication
+========================= */
+
 async function initializeRating() {
   try {
     const credential = await signInAnonymously(auth);
 
     currentUser = credential.user;
 
-    // Check whether this user has already rated
+    // Check for an existing rating
     const existingRating = await get(
       ref(db, `ratings/${currentUser.uid}`)
     );
 
     if (existingRating.exists()) {
-      hasVoted = true;
-
-      selectedRating = Number(
-        existingRating.val().stars
+      const savedValue = Number(
+        existingRating.val()?.stars
       );
 
-      showStars(selectedRating);
+      if (
+        Number.isInteger(savedValue) &&
+        savedValue >= 1 &&
+        savedValue <= 5
+      ) {
+        hasVoted = true;
+        selectedRating = savedValue;
 
-      ratingMessage.textContent =
-        "شكرًا، إنتِ قيّمتي الموقع بالفعل ❤️";
+        showStars(selectedRating);
+
+        ratingMessage.textContent =
+          "تقييمك محفوظ ❤️ تقدري تغيّريه في أي وقت.";
+      } else {
+        ratingMessage.textContent =
+          "اختاري عدد النجوم لتحديث تقييمك.";
+      }
     } else {
       ratingMessage.textContent = "اختاري عدد النجوم";
     }
 
+    // Allow selecting and editing ratings
     isReady = true;
 
-    if (hasVoted) {
-      stars.forEach((button) => {
-        button.disabled = true;
-      });
-    }
+    stars.forEach((button) => {
+      button.disabled = false;
+    });
+
   } catch (error) {
     console.error("Authentication error:", error);
 
@@ -243,10 +283,15 @@ async function initializeRating() {
       "تعذر الاتصال بخدمة التقييم. حاولي لاحقًا.";
 
     isReady = false;
+
+    stars.forEach((button) => {
+      button.disabled = true;
+    });
   }
 }
 
 initializeRating();
+
 
 // End Firebase
 
