@@ -331,7 +331,8 @@ button:hover,
 
 /******************** Service **************************/
 #Service,
-#Contact {
+#Contact,
+.footer-contact {
   background-color: #caf0f84c;
   height: auto;
   padding-bottom: 3rem;
@@ -560,6 +561,62 @@ button:hover,
   }
 }
 /********************End Contact **************************/
+
+
+/********************Rateing **************************/
+
+
+.rating-section {
+  text-align: center;
+  padding: 3rem 1rem;
+  margin: 3rem auto;
+}
+
+.rating-stars {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin: 1.5rem 0;
+}
+
+.rating-stars button {
+  border: none;
+  background: none;
+  color: #ccc;
+  font-size: 2.5rem;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.rating-stars button.active,
+.rating-stars button:hover {
+  color: #f5b400;
+}
+
+.rating-stars button:disabled {
+  cursor: default;
+}
+
+.rating-result {
+  margin-top: 1.5rem;
+}
+
+.rating-result strong {
+  font-size: 2rem;
+}
+
+.rating-result p {
+  margin-top: 0.5rem;
+}
+/********************madia quary  ***********************/
+@media (max-width: 576px) {
+  .rating-stars button {
+    font-size: 2rem;
+  }
+}
+
+
+/********************End Rateing **************************/
 
 /********************Footer **************************/
 
