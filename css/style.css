@@ -484,6 +484,7 @@ button:hover,
   font-size: 5rem;
   padding: 3rem 0;
 }
+
 .facebook-card {
   display: block;
   text-decoration: none;
@@ -497,6 +498,17 @@ button:hover,
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
 }
 
+#callUs {
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+#callUs:hover {
+  transform: translateY(-5px);
+}
+
+
+/********************madia quary  ***********************/
 @media (max-width: 1024px) {
   .contact-content {
     gap: 1.5rem;
@@ -551,14 +563,10 @@ button:hover,
 
 /********************Footer **************************/
 
-footer {
-  height: 8rem;
-  display: flex;
-  align-items: center;
-}
 .footer-contact {
   text-align: center;
   font-size: 1.5rem;
+  padding-top: 30px;
 }
 .footer-contact span {
   background: linear-gradient(to right, rgba(0, 213, 255, 0.632), #0829e5a2);
@@ -569,7 +577,58 @@ footer {
   font-size: 2rem;
 }
 
+/* Footer Buttons */
+.footer-buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.footer-contact .footer-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-width: 150px;
+    padding: 12px 24px;
+    border-radius: 30px;
+    color: white !important;
+    font-size: 16px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.footer-btn i {
+    font-size: 20px;
+}
+
+.footer-contact .facebook-btn {
+    background-color: #1877F2;
+}
+
+.footer-contact .whatsapp-btn {
+    background-color: #25D366;
+}
+
+.footer-contact .email-btn {
+    background-color: #0879e8;
+}
+
+.footer-contact .footer-btn:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+    filter: brightness(0.92);
+}
+
+
+
+
 /********************madia quary  ***********************/
+
 @media (max-width: 768px) {
   footer {
     height: auto;
@@ -585,5 +644,19 @@ footer {
     font-size: 1.5rem;
   }
 }
+
+@media (max-width: 576px) {
+  .footer-buttons {
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .footer-contact .footer-btn {
+    width: 85%;
+    max-width: 280px;
+  }
+}
+
 
 /********************End Footer **************************/
