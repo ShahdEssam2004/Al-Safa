@@ -474,7 +474,32 @@
        
     </section>
     <!--End Contact -->
+<!--Rate -->
+    
+<section class="rating-section" id="rating">
+  <h2>Rate Your Experience</h2>
+  <p>رأيك يهمنا، قيّمي تجربتك معانا ⭐</p>
 
+  <div class="rating-stars" id="ratingStars">
+    <button type="button" data-rating="1" aria-label="1 star">★</button>
+    <button type="button" data-rating="2" aria-label="2 stars">★</button>
+    <button type="button" data-rating="3" aria-label="3 stars">★</button>
+    <button type="button" data-rating="4" aria-label="4 stars">★</button>
+    <button type="button" data-rating="5" aria-label="5 stars">★</button>
+  </div>
+
+  <p id="ratingMessage" aria-live="polite">
+    اختاري عدد النجوم
+  </p>
+
+  <div class="rating-result">
+    <strong id="averageRating">--</strong>
+    <span> / 5</span>
+    <p><span id="ratingCount">0</span> تقييم</p>
+  </div>
+</section>
+
+    <!--End Rate -->
 
 
     <!--Footer -->
@@ -515,6 +540,6 @@
 
 
     <script src="js/bootstrap.bundle.min.js"></script>
-    <script src="js/main.js"></script>
+    <script type="module" src="js/main.js"></script>
 </body>
 </html>
